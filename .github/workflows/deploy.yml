@@ -21,5 +21,5 @@ jobs:
 
       - name: Build & deploy
         run: |
-          docker compose up -d --build --remove-orphans
-          docker image prune -f
+          sudo docker compose up -d --build --remove-orphans
+          sduo docker image prune -f
