@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Green Fashion Solution — UX & Flow Demonstration</title>
+  <style>
+    :root {
+      --ink: #1b1b1b;
+      --muted: #5f5f5f;
+      --line: #d9d9d9;
+      --soft: #f7f7f7;
+      --accent: #1f6f4a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      color: var(--ink);
+      background: #ececec;
+      line-height: 1.45;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .doc {
+      max-width: 210mm;
+      margin: 20px auto 40px;
+      background: #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    .page {
+      min-height: 297mm;
+      padding: 16mm 18mm;
+      position: relative;
+      page-break-after: always;
+    }
+    .page:last-child { page-break-after: auto; }
+    h1, h2, h3 { margin: 0 0 10px; line-height: 1.2; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 17px; }
+    p { margin: 0 0 10px; color: var(--muted); }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: .15em;
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .lead { font-size: 18px; color: var(--ink); }
+    .block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .chip {
+      display: inline-block;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 9px;
+      margin: 0 5px 6px 0;
+      font-size: 11px;
+      color: var(--ink);
+      background: #fff;
+    }
+    .flow {
+      border-left: 3px solid var(--accent);
+      padding-left: 12px;
+      margin: 8px 0 14px;
+    }
+    .flow-step {
+      margin: 0 0 10px;
+      padding: 8px 10px;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    .flow-step strong { color: var(--ink); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px;
+      font-size: 13px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f0f0f0;
+      color: var(--ink);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    ul { margin: 0 0 8px 18px; color: var(--muted); }
+    li { margin-bottom: 5px; }
+    .ok { color: #0f7b45; font-weight: 600; }
+    .note {
+      background: #f2f8f4;
+      border: 1px solid #cde5d6;
+      padding: 10px 12px;
+      border-radius: 6px;
+      margin: 10px 0;
+      color: #2f5f45;
+      font-size: 13px;
+    }
+    .footer {
+      position: absolute;
+      left: 18mm;
+      right: 18mm;
+      bottom: 12mm;
+      border-top: 1px solid var(--line);
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .printbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      z-index: 999;
+      font-size: 13px;
+    }
+    .printbar button {
+      border: 0;
+      background: #fff;
+      color: #111;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    @media screen { body { padding-top: 44px; } }
+    @media print {
+      body { background: #fff; padding: 0; }
+      .doc { margin: 0; box-shadow: none; max-width: none; }
+      .printbar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="printbar">
+    <span>Green Fashion Solution — UX & Flow Demonstration</span>
+    <button onclick="window.print()">Save as PDF</button>
+  </div>
+
+  <div class="doc">
+    <section class="page">
+      <p class="eyebrow">Owner Review Document</p>
+      <h1>Green Fashion Solution</h1>
+      <h2 style="margin-top:-4px;">UX & End-to-End Flow Demonstration</h2>
+      <p class="lead">
+        This document is not a sales brochure. It is a practical walkthrough for the app owner
+        to validate exactly what we built, how users move through the product, and where the handoffs happen.
+      </p>
+
+      <div class="block">
+        <h3>Objective of this document</h3>
+        <ul>
+          <li>Show the full UX structure by portal (Public, Customer, Designer, Admin)</li>
+          <li>Show real lifecycle flows and decision points</li>
+          <li>Make demos consistent for stakeholder and owner reviews</li>
+          <li>Align what is already shipped vs what is next</li>
+        </ul>
+      </div>
+
+      <div class="grid-2">
+        <div class="block">
+          <h3>Core principle</h3>
+          <p><strong>Customer and Designer never communicate directly.</strong> Admin is the only bridge.</p>
+        </div>
+        <div class="block">
+          <h3>AI scope</h3>
+          <p>AI supports customer moodboards and admin proposal drafting only. Final decisions remain human.</p>
+        </div>
+      </div>
+
+      <div class="note">
+        Owner note: use this as your review script while clicking through the live app.
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 1</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">1. Information Architecture</p>
+      <h2>Portal map and route groups</h2>
+
+      <div class="grid-3">
+        <div class="block">
+          <h3>Public</h3>
+          <p>Landing + authentication + designer application.</p>
+          <div>
+            <span class="chip">/</span>
+            <span class="chip">/login</span>
+            <span class="chip">/register</span>
+            <span class="chip">/designer-apply</span>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Customer Portal</h3>
+          <p>Project creation, moodboards, proposals, meetings, settings.</p>
+          <div>
+            <span class="chip">/customer/dashboard</span>
+            <span class="chip">/customer/projects</span>
+            <span class="chip">/customer/moodboard</span>
+            <span class="chip">/customer/inspiration</span>
+            <span class="chip">/customer/proposals</span>
+            <span class="chip">/customer/meetings</span>
+            <span class="chip">/customer/settings</span>
+          </div>
+        </div>
+        <div class="block">
+          <h3>Designer Portal</h3>
+          <p>Asset library uploads + assigned briefs/tasks.</p>
+          <div>
+            <span class="chip">/designer/dashboard</span>
+            <span class="chip">/designer/assets/fabrics</span>
+            <span class="chip">/designer/assets/products</span>
+            <span class="chip">/designer/briefs</span>
+            <span class="chip">/designer/tasks</span>
+            <span class="chip">/designer/settings</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Admin Portal (operations command center)</h3>
+        <p>Project orchestration across all modules.</p>
+        <div>
+          <span class="chip">/admin/dashboard</span>
+          <span class="chip">/admin/projects</span>
+          <span class="chip">/admin/proposals</span>
+          <span class="chip">/admin/tasks</span>
+          <span class="chip">/admin/meetings</span>
+          <span class="chip">/admin/calendar</span>
+          <span class="chip">/admin/users</span>
+          <span class="chip">/admin/designers</span>
+          <span class="chip">/admin/designer-applications</span>
+          <span class="chip">/admin/leads</span>
+          <span class="chip">/admin/waitlist</span>
+          <span class="chip">/admin/moodboards</span>
+          <span class="chip">/admin/inspiration</span>
+          <span class="chip">/admin/files</span>
+          <span class="chip">/admin/notifications</span>
+          <span class="chip">/admin/audit</span>
+          <span class="chip">/admin/settings</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 2</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">2. Main Product Lifecycle</p>
+      <h2>Project flow from intake to completion</h2>
+
+      <div class="flow">
+        <div class="flow-step"><strong>Step 1 — Customer:</strong> Create Project and upload inspiration files.</div>
+        <div class="flow-step"><strong>Step 2 — Customer:</strong> Build/iterate moodboard canvas with AI assistance.</div>
+        <div class="flow-step"><strong>Step 3 — Admin:</strong> Review project and assign tasks/briefs to internal designers.</div>
+        <div class="flow-step"><strong>Step 4 — Designer:</strong> Upload fabric/product references to internal asset library.</div>
+        <div class="flow-step"><strong>Step 5 — Admin:</strong> Build proposal from curated assets (AI-assisted draft + manual control).</div>
+        <div class="flow-step"><strong>Step 6 — Customer:</strong> Approve / Reject / Request changes and select inspiration items.</div>
+        <div class="flow-step"><strong>Step 7 — Admin:</strong> Revise proposal if needed, schedule Teams meetings, and move status.</div>
+        <div class="flow-step"><strong>Step 8 — Admin + Customer:</strong> Track Sampling → Production → Completed.</div>
+      </div>
+
+      <div class="block">
+        <h3>Lifecycle statuses visible in project timeline</h3>
+        <p>
+          Draft → Submitted → In Review → Sourcing → Proposal Ready → Sampling → Production → Completed
+        </p>
+      </div>
+
+      <div class="note">
+        UX outcome: every persona sees only the screens relevant to its role, but all screens align on the same project lifecycle.
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 3</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">3. Customer UX Walkthrough</p>
+      <h2>What the brand team experiences</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Screen</th>
+            <th>User action</th>
+            <th>Business outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dashboard</td>
+            <td>Review active projects, proposals, and meetings</td>
+            <td>Top-level visibility without asking admin manually</td>
+          </tr>
+          <tr>
+            <td>Projects + Project Detail</td>
+            <td>Create project, view lifecycle timeline and files</td>
+            <td>Single source of truth for project status</td>
+          </tr>
+          <tr>
+            <td>Moodboard list + canvas</td>
+            <td>Create/edit board, upload visual references, parse images</td>
+            <td>Visual direction captured in structured project context</td>
+          </tr>
+          <tr>
+            <td>Inspiration</td>
+            <td>Like/save/select curated references</td>
+            <td>Signals preferences for proposal revisions</td>
+          </tr>
+          <tr>
+            <td>Proposals</td>
+            <td>Approve, reject, request changes</td>
+            <td>Moves work to sampling or revision</td>
+          </tr>
+          <tr>
+            <td>Meetings</td>
+            <td>Request consultations</td>
+            <td>Structured scheduling with status and Teams links</td>
+          </tr>
+          <tr>
+            <td>Settings</td>
+            <td>Email preferences, data export, account controls</td>
+            <td>Operational trust and compliance readiness</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="block">
+        <h3>Customer journey quality check</h3>
+        <ul>
+          <li class="ok">No customer access to designer workspace</li>
+          <li class="ok">Project-centric navigation prevents context loss</li>
+          <li class="ok">Proposal decisions are explicit and auditable</li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 4</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">4. Internal UX Walkthrough (Designer + Admin)</p>
+      <h2>How execution is controlled behind the scenes</h2>
+
+      <div class="grid-2">
+        <div class="block">
+          <h3>Designer UX</h3>
+          <ul>
+            <li>Upload fabric and product references with keywords</li>
+            <li>Manage personal asset library and assigned work</li>
+            <li>Complete tasks generated by admin</li>
+            <li><strong>Boundary:</strong> no customer data visibility</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Admin UX</h3>
+          <ul>
+            <li>Projects board and detailed project control</li>
+            <li>Task assignment and lifecycle progression</li>
+            <li>AI-assisted proposal drafting + final manual submission</li>
+            <li>Meetings approvals and calendar orchestration</li>
+            <li>User management, audit, leads, files, notifications</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Critical handoff points</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Handoff</th>
+              <th>System behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Customer inspiration → Admin review</td>
+              <td>Moodboard + project context available to admin in one flow</td>
+            </tr>
+            <tr>
+              <td>Admin tasking → Designer uploads</td>
+              <td>Assets become proposal inputs; still invisible to customer until curated</td>
+            </tr>
+            <tr>
+              <td>Admin proposal → Customer decision</td>
+              <td>Status transitions: sent / approved / rejected / changes requested</td>
+            </tr>
+            <tr>
+              <td>Customer revision request → Admin rebuild</td>
+              <td>Selected inspiration context can prefill next proposal pass</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 5</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">5. AI Experience in UX</p>
+      <h2>Where AI appears for users</h2>
+
+      <div class="block">
+        <h3>Customer-facing AI</h3>
+        <ul>
+          <li>AI moodboard assistant in canvas workflow</li>
+          <li>Image parsing and structured board augmentation</li>
+          <li>AI image generation into moodboard context</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <h3>Admin-facing AI</h3>
+        <ul>
+          <li>Proposal assistant panel for pre-drafting proposal content</li>
+          <li>RAG-backed context from project assets/history to improve suggestions</li>
+          <li>Admin keeps final approval and submission control</li>
+        </ul>
+      </div>
+
+      <div class="note">
+        UX rule: AI assists creation speed, but it does not bypass role boundaries or business approvals.
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 6</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">6. Notifications, Meetings, and Trust UX</p>
+      <h2>Operational polish delivered</h2>
+
+      <div class="grid-2">
+        <div class="block">
+          <h3>Notifications UX</h3>
+          <ul>
+            <li>In-app bell across portals</li>
+            <li>Realtime updates for key events</li>
+            <li>Email notifications with preference toggle</li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Meetings UX</h3>
+          <ul>
+            <li>Customer request flow</li>
+            <li>Admin approve/schedule controls</li>
+            <li>Teams link visibility when configured</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="block">
+        <h3>Data & compliance UX surfaces</h3>
+        <ul>
+          <li>User data export endpoint exposed via settings UX</li>
+          <li>Account delete flow in settings</li>
+          <li>Audit log pages for admin traceability</li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 7</span>
+      </div>
+    </section>
+
+    <section class="page">
+      <p class="eyebrow">7. Demo Script for Owner Review</p>
+      <h2>How to present the product in 20–25 minutes</h2>
+
+      <div class="flow">
+        <div class="flow-step"><strong>Minute 1–3:</strong> Public landing and auth (show value proposition and role entry).</div>
+        <div class="flow-step"><strong>Minute 4–9:</strong> Customer creates project + opens moodboard canvas + uploads inspiration.</div>
+        <div class="flow-step"><strong>Minute 10–13:</strong> Switch to Admin, assign tasks, open proposal builder, show AI assist.</div>
+        <div class="flow-step"><strong>Minute 14–17:</strong> Switch to Designer, upload fabric/product assets, show task context.</div>
+        <div class="flow-step"><strong>Minute 18–20:</strong> Back to Customer, review proposal and make decision.</div>
+        <div class="flow-step"><strong>Minute 21–23:</strong> Show meetings request/approval and timeline status progression.</div>
+        <div class="flow-step"><strong>Minute 24–25:</strong> Show settings (preferences/export) and close with roadmap.</div>
+      </div>
+
+      <div class="block">
+        <h3>Owner acceptance checklist</h3>
+        <ul>
+          <li>Can we demonstrate all three role portals clearly?</li>
+          <li>Can we show one complete lifecycle from project intake to proposal decision?</li>
+          <li>Can we prove boundary rules (no customer/designer cross-visibility)?</li>
+          <li>Can we show operational confidence (notifications, meetings, audit)?</li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        <span>Green Fashion Solution — UX Demonstration</span>
+        <span>Page 8</span>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

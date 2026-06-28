@@ -1,50 +1,30 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "./styles/tokens.css";
+@import "./styles/moodboard-tldraw-overrides.css";
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@custom-variant dark (&:is(.dark *));
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    border-radius: 0;
   }
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+@keyframes nav-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
+.nav-progress-bar {
+  transform-origin: left;
+  animation: nav-progress 350ms var(--ease-editorial, ease-out) forwards;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.imgDark {
-  display: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-
-  .imgLight {
-    display: none;
-  }
-  .imgDark {
-    display: unset;
-  }
+@keyframes agent-dot {
+  0%, 60%, 100% { opacity: 0.2; transform: scaleY(1); }
+  30% { opacity: 1; transform: scaleY(1.5); }
 }

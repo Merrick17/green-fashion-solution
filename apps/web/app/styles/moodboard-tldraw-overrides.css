@@ -1,0 +1,52 @@
+/* Third-party tldraw selectors only — not app utility classes */
+
+.moodboard-canvas .tl-container {
+  --tl-color-background: var(--canvas-bg);
+  --tl-color-low: var(--canvas-chrome-bg);
+  --tl-color-panel: var(--portal-surface);
+  --tl-color-text: var(--foreground);
+  --tl-color-text-2: var(--portal-muted);
+  --tl-color-selected: var(--portal-accent);
+  --tl-shadow-2: none;
+  --tl-shadow-3: none;
+}
+
+.moodboard-canvas .tlui-main-toolbar__inner,
+.moodboard-canvas .tlui-navigation-panel::before {
+  border: 1px solid var(--portal-border);
+  background: var(--canvas-chrome-bg);
+  backdrop-filter: blur(10px);
+}
+
+.moodboard-canvas .tlui-menu-zone {
+  border-color: var(--portal-border);
+  background: var(--canvas-chrome-bg);
+}
+
+.moodboard-canvas .tl-background {
+  background: transparent !important;
+}
+
+.moodboard-style-panel-slot .tlui-style-panel__wrapper {
+  position: static;
+  margin: 0;
+  width: 100%;
+  max-height: none;
+  overflow: visible;
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.moodboard-style-panel-slot .tlui-style-panel {
+  max-height: none;
+}
+
+.moodboard-style-panel-slot .tlui-style-panel__section {
+  overflow: hidden;
+}
+
+.gcal-shell .rbc-date-cell.rbc-now > a {
+  border-radius: 9999px;
+}

@@ -1,0 +1,56 @@
+# ── Version control ──────────────────────────────────────────────────
+.git
+.gitignore
+.gitattributes
+
+# ── Secrets — never in build context ─────────────────────────────────
+.env
+.env.*
+!.env.example
+apps/**/.env
+apps/**/.env.*
+*.pem
+*.key
+
+# ── Build artifacts (rebuilt inside the container) ────────────────────
+node_modules
+**/node_modules
+.next
+apps/web/.next
+dist
+apps/api/dist
+.turbo
+**/.turbo
+
+# ── Test / coverage ───────────────────────────────────────────────────
+coverage
+**/coverage
+*.test.ts
+*.spec.ts
+e2e
+**/e2e
+playwright-report
+test-results
+
+# ── Dev tooling ───────────────────────────────────────────────────────
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+**/.DS_Store
+Thumbs.db
+
+# ── Docs / CI (not needed in image) ──────────────────────────────────
+.github
+docs
+*.md
+!apps/api/README.md
+!apps/web/README.md
+
+# ── Logs ─────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── Local uploads (rebuilt volume in container) ───────────────────────
+apps/api/uploads

@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "globalfashionsolutionapp",
   "version": "0.0.0",
   "private": true,
   "description": "",
@@ -11,7 +11,8 @@
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:seed": "npm run db:seed --workspace=apps/api"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
@@ -26,5 +27,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@next/swc-win32-x64-msvc": "^16.2.0"
+  }
 }

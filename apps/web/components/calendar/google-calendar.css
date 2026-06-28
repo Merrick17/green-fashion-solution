@@ -1,0 +1,132 @@
+/* Portal calendar — token-driven react-big-calendar skin */
+
+.gcal-shell .rbc-calendar {
+  background: var(--gcal-bg);
+  color: var(--gcal-fg);
+  height: 100%;
+  min-height: 0;
+}
+
+.gcal-shell .rbc-month-view,
+.gcal-shell .rbc-time-view {
+  border: none;
+  flex: 1;
+  min-height: 0;
+}
+
+.gcal-shell .rbc-header {
+  border-right: 1px solid var(--gcal-border);
+  border-bottom: 1px solid var(--gcal-border);
+  color: var(--gcal-muted);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 8px 0;
+  background: var(--gcal-bg);
+}
+
+.gcal-shell .rbc-day-bg {
+  background: var(--gcal-bg);
+  border-right: 1px solid var(--gcal-border);
+}
+
+.gcal-shell .rbc-month-row + .rbc-month-row {
+  border-top: 1px solid var(--gcal-border);
+}
+
+.gcal-shell .rbc-today {
+  background: var(--gcal-today-bg) !important;
+  background-image: none !important;
+}
+
+.gcal-shell .rbc-off-range-bg {
+  background: var(--gcal-off-range-bg);
+}
+
+.gcal-shell .rbc-date-cell {
+  padding: 4px 8px 0 0;
+  font-size: 12px;
+}
+
+.gcal-shell .rbc-date-cell.rbc-now > a {
+  display: inline-flex;
+  height: 24px;
+  min-width: 24px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px !important;
+  background: var(--gcal-accent);
+  color: var(--portal-accent-foreground) !important;
+  font-weight: 500;
+}
+
+.gcal-shell .rbc-time-content,
+.gcal-shell .rbc-time-header,
+.gcal-shell .rbc-time-gutter {
+  border-color: var(--gcal-border);
+}
+
+.gcal-shell .rbc-time-gutter .rbc-label {
+  font-size: 10px;
+  color: var(--gcal-muted);
+}
+
+.gcal-shell .rbc-timeslot-group {
+  min-height: 48px;
+  border-color: var(--gcal-border);
+}
+
+.gcal-shell .rbc-current-time-indicator {
+  background-color: var(--gcal-destructive) !important;
+  height: 2px;
+}
+
+.gcal-shell .rbc-toolbar {
+  display: none;
+}
+
+.gcal-shell .rbc-event {
+  border: none;
+  box-shadow: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 6px;
+}
+
+.gcal-shell .gcal-event-meeting {
+  --event-bg: var(--portal-accent-soft);
+  --event-color: var(--portal-accent);
+  --event-border: transparent;
+}
+
+.gcal-shell .gcal-event-meeting-pending {
+  --event-bg: var(--portal-surface-muted);
+  --event-color: var(--warning);
+  --event-border: transparent;
+}
+
+.gcal-shell .gcal-event-milestone {
+  --event-bg: color-mix(in srgb, var(--portal-accent) 15%, var(--portal-surface));
+  --event-color: var(--portal-accent);
+  --event-border: transparent;
+}
+
+.gcal-shell .gcal-event-task {
+  --event-bg: var(--portal-surface-muted);
+  --event-color: var(--portal-muted);
+  --event-border: transparent;
+}
+
+.gcal-shell .rbc-show-more {
+  color: var(--gcal-accent);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.gcal-shell .rbc-agenda-view table.rbc-agenda-table {
+  border-color: var(--gcal-border);
+}
+
+.gcal-shell .rbc-agenda-view table.rbc-agenda-table tbody > tr > td {
+  padding: 12px 16px;
+  font-size: 13px;
+}

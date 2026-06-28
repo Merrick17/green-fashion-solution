@@ -3,6 +3,9 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist",
-    "strictNullChecks": true
-  }
+    "strictNullChecks": true,
+    "strictPropertyInitialization": false,
+    "types": ["jest", "node"]
+  },
+  "exclude": ["node_modules", "dist"]
 }

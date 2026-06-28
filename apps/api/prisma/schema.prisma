@@ -1,0 +1,742 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  CUSTOMER
+  DESIGNER
+  ADMIN
+}
+
+enum ProjectStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  SOURCING
+  PROPOSAL_READY
+  SAMPLING
+  PRODUCTION
+  COMPLETED
+  CANCELLED
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum BriefType {
+  FABRIC_SOURCING
+  PRODUCT_REFERENCE
+  STYLE_DIRECTION
+  TECHNICAL_REVIEW
+  SAMPLE_PREP
+}
+
+enum BriefPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MeetingStatus {
+  REQUESTED
+  APPROVED
+  SCHEDULED
+  COMPLETED
+  ARCHIVED
+}
+
+enum NotificationType {
+  PROPOSAL_READY
+  TASK_ASSIGNED
+  MEETING_REQUESTED
+  MEETING_APPROVED
+  STATUS_CHANGED
+  MESSAGE_RECEIVED
+}
+
+enum ProjectType {
+  PRODUCT_DEVELOPMENT
+  FABRIC_SOURCING
+  FACTORY_COORDINATION
+  SAMPLING_PRODUCTION
+}
+
+enum BudgetRange {
+  UNDER_10K
+  RANGE_10K_25K
+  RANGE_25K_50K
+  RANGE_50K_100K
+  OVER_100K
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CONVERTED
+}
+
+enum FileType {
+  IMAGE
+  PDF
+  TECHNICAL_SHEET
+  REFERENCE
+}
+
+enum InspirationAction {
+  LIKED
+  SAVED
+  SELECTED
+}
+
+enum MoodItemType {
+  IMAGE
+  TEXT
+  COLOR
+  LINK
+  AI_GENERATED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  LOW_STOCK
+  DISCONTINUED
+}
+
+enum SamplingStatus {
+  NOT_STARTED
+  IN_SAMPLING
+  SAMPLE_APPROVED
+  SAMPLE_REJECTED
+  IN_PRODUCTION
+  DELIVERED
+}
+
+enum MilestoneType {
+  GENERAL
+  SAMPLE_REQUEST
+  SAMPLE_PRODUCED
+  SAMPLE_SHIPPED
+  CUSTOMER_RECEIVED
+  FEEDBACK_DUE
+  PRODUCTION_START
+  DELIVERY
+}
+
+enum DesignerApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BriefOptionType {
+  SEASON
+  CATEGORY
+}
+
+model User {
+  id                 String   @id @default(cuid())
+  email              String   @unique
+  password           String
+  name               String
+  role               UserRole @default(CUSTOMER)
+  blocked            Boolean  @default(false)
+  emailNotifications Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  projects              Project[]
+  fabricAssets          FabricAsset[]
+  productAssets         ProductAsset[]
+  tasks                 Task[]
+  meetings              Meeting[]
+  files                 File[]
+  notifications         Notification[]
+  inspirationSelections InspirationSelection[]
+  auditLogs             AuditLog[]
+  aiSessions            AiSession[]
+  proposalChangeRequests ProposalChangeRequest[]
+  proposalAiSessions    ProposalAiSession[]
+  proposalReadEvents    ProposalReadEvent[]
+
+  collections           Collection[]
+  messageThreads        MessageThread[]
+
+
+  @@index([blocked])
+  @@map("users")
+}
+
+model Project {
+  id               String        @id @default(cuid())
+  title            String
+  description      String
+  status           ProjectStatus @default(DRAFT)
+  season           String?
+  category         String?
+  budgetBand       String?
+  targetDelivery   DateTime?
+  moq                         Int?
+  garmentCategories           String[]
+  targetPricePointMillimes    Int?
+  sustainabilityRequirements  String?
+  briefSubmittedAt            DateTime?
+  coverImageUrl               String?
+  customerId       String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  customer              User                   @relation(fields: [customerId], references: [id])
+  moodboards            Moodboard[]
+  proposals             Proposal[]
+  tasks                 Task[]
+  milestones            Milestone[]
+  meetings              Meeting[]
+  files                 File[]
+  inspirationSelections InspirationSelection[]
+  messageThreads        MessageThread[]
+  aiEmbeddingChunks     AiEmbeddingChunk[]
+  proposalAiSessions    ProposalAiSession[]
+
+  @@index([customerId])
+  @@index([status])
+  @@map("projects")
+}
+
+model Moodboard {
+  id                String   @id @default(cuid())
+  projectId         String
+  styleDirection    String
+  colorPalette      String[]
+  fabricSuggestions String[]
+  mood              String
+  canvasViewport    Json?
+  generatedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  items   MoodItem[]
+  aiSessions AiSession[]
+  snapshots MoodboardSnapshot[]
+
+  @@index([projectId])
+  @@map("moodboards")
+}
+
+model MoodItem {
+  id          String       @id @default(cuid())
+  moodboardId String
+  type        MoodItemType
+  x           Float        @default(0)
+  y           Float        @default(0)
+  width       Float        @default(200)
+  height      Float        @default(200)
+  rotation    Float        @default(0)
+  zIndex      Int          @default(0)
+  content     Json
+  style       Json?
+  locked      Boolean      @default(false)
+  groupId     String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  moodboard Moodboard @relation(fields: [moodboardId], references: [id], onDelete: Cascade)
+
+  @@index([moodboardId])
+  @@index([moodboardId, zIndex])
+  @@map("mood_items")
+}
+
+model AiSession {
+  id          String   @id @default(cuid())
+  moodboardId String
+  userId      String
+  messages    Json     @default("[]")
+  modelId     String?
+  settings    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  moodboard Moodboard @relation(fields: [moodboardId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([moodboardId, userId])
+  @@index([userId])
+  @@map("ai_sessions")
+}
+
+
+
+model FabricAsset {
+  id                   String   @id @default(cuid())
+  designerId           String
+  name                 String
+  description          String?
+  imageUrl             String
+  keywords             String[] @default([])
+  metadata             Json?
+  composition          String?
+  color                String?
+  supplier             String?
+  moq                  Int?
+  leadTimeDays         Int?
+  pricePerUnitMillimes Int?
+  briefId              String?
+  seasons              String[]           @default([])
+  availabilityStatus   AvailabilityStatus @default(AVAILABLE)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  designer              User                   @relation(fields: [designerId], references: [id])
+  proposalItems         ProposalItem[]
+  inspirationSelections InspirationSelection[]
+  collectionItems       CollectionItem[]
+
+  @@index([designerId])
+  @@map("fabric_assets")
+}
+
+model ProductAsset {
+  id                   String   @id @default(cuid())
+  designerId           String
+  name                 String
+  description          String?
+  imageUrl             String
+  keywords             String[] @default([])
+  metadata             Json?
+  composition          String?
+  color                String?
+  supplier             String?
+  moq                  Int?
+  leadTimeDays         Int?
+  pricePerUnitMillimes Int?
+  briefId              String?
+  seasons              String[]           @default([])
+  availabilityStatus   AvailabilityStatus @default(AVAILABLE)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  designer              User                   @relation(fields: [designerId], references: [id])
+  proposalItems         ProposalItem[]
+  inspirationSelections InspirationSelection[]
+  collectionItems       CollectionItem[]
+
+  @@index([designerId])
+  @@map("product_assets")
+}
+
+model Proposal {
+  id            String            @id @default(cuid())
+  projectId     String
+  version       Int               @default(1)
+  status        ProposalStatus    @default(DRAFT)
+  title         String?
+  season        String?
+  styleSummary  String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  project        Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sections       ProposalSection[]
+  changeRequests ProposalChangeRequest[]
+  readEvents     ProposalReadEvent[]
+
+  @@index([projectId])
+  @@index([status])
+  @@map("proposals")
+}
+
+model ProposalChangeRequest {
+  id         String   @id @default(cuid())
+  proposalId String
+  customerId String
+  message    String
+  sectionId  String?
+  createdAt  DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@index([proposalId])
+  @@index([customerId])
+  @@map("proposal_change_requests")
+}
+
+model ProposalSection {
+  id          String   @id @default(cuid())
+  proposalId  String
+  title       String
+  description String?
+  adminNotes  String?
+  position    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  proposal Proposal       @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  items    ProposalItem[]
+
+  @@index([proposalId])
+  @@map("proposal_sections")
+}
+
+
+model ProposalItem {
+  id                String         @id @default(cuid())
+  sectionId         String
+  fabricAssetId     String?
+  productAssetId    String?
+  notes             String?
+  position          Int            @default(0)
+  samplingStatus    SamplingStatus @default(NOT_STARTED)
+  confirmedQty      Int?
+  confirmedColorway String?
+  deliveryEta       DateTime?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  section      ProposalSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  fabricAsset  FabricAsset?    @relation(fields: [fabricAssetId], references: [id])
+  productAsset ProductAsset?   @relation(fields: [productAssetId], references: [id])
+
+  @@index([sectionId])
+  @@map("proposal_items")
+}
+
+model Task {
+  id                   String        @id @default(cuid())
+  projectId            String
+  designerId           String
+  title                String
+  description          String?
+  briefType            BriefType     @default(FABRIC_SOURCING)
+  priority             BriefPriority @default(MEDIUM)
+  deliverables         String?
+  status               TaskStatus    @default(PENDING)
+  dueDate              DateTime?
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  project  Project @relation(fields: [projectId], references: [id])
+  designer User    @relation(fields: [designerId], references: [id])
+
+  @@index([projectId])
+  @@index([designerId])
+  @@index([status])
+  @@index([briefType])
+  @@map("tasks")
+}
+
+model Milestone {
+  id        String        @id @default(cuid())
+  projectId String
+  title     String
+  date      DateTime
+  completed Boolean       @default(false)
+  type      MilestoneType @default(GENERAL)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([date])
+  @@map("milestones")
+}
+
+model Meeting {
+  id              String        @id @default(cuid())
+  projectId       String
+  customerId      String
+  status          MeetingStatus @default(REQUESTED)
+  requestedAt     DateTime
+  scheduledAt     DateTime?
+  teamsLink       String?
+  agenda          String?
+  durationMinutes Int?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  project  Project @relation(fields: [projectId], references: [id])
+  customer User    @relation(fields: [customerId], references: [id])
+
+  @@index([projectId])
+  @@index([customerId])
+  @@index([status])
+  @@map("meetings")
+}
+
+model File {
+  id           String   @id @default(cuid())
+  projectId    String
+  uploadedById String
+  url          String
+  type         FileType @default(IMAGE)
+  version      Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project    Project @relation(fields: [projectId], references: [id])
+  uploadedBy User    @relation(fields: [uploadedById], references: [id])
+
+  @@index([projectId])
+  @@map("files")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  message   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@map("notifications")
+}
+
+model InspirationSelection {
+  id             String            @id @default(cuid())
+  projectId      String
+  customerId     String
+  fabricAssetId  String?
+  productAssetId String?
+  action         InspirationAction
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  project      Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  customer     User          @relation(fields: [customerId], references: [id])
+  fabricAsset  FabricAsset?  @relation(fields: [fabricAssetId], references: [id])
+  productAsset ProductAsset? @relation(fields: [productAssetId], references: [id])
+
+  @@unique([projectId, customerId, fabricAssetId, productAssetId, action])
+  @@index([projectId])
+  @@index([customerId])
+  @@map("inspiration_selections")
+}
+
+model Lead {
+  id          String      @id @default(cuid())
+  name        String
+  brand       String
+  email       String
+  projectType ProjectType
+  budgetRange BudgetRange
+  status      LeadStatus  @default(NEW)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("leads")
+}
+
+model WaitlistEntry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  brand     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("waitlist_entries")
+}
+
+model DesignerApplication {
+  id           String                    @id @default(cuid())
+  name         String
+  email        String
+  portfolioUrl String?
+  experience   String?
+  message      String?
+  status       DesignerApplicationStatus @default(PENDING)
+  reviewedAt   DateTime?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime                  @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@map("designer_applications")
+}
+
+model AuditLog {
+  id        String      @id @default(cuid())
+  userId    String
+  action    AuditAction
+  entity    String
+  entityId  String
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+model Collection {
+  id          String   @id @default(cuid())
+  designerId  String
+  name        String
+  description String?
+  coverItemId String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  designer User             @relation(fields: [designerId], references: [id], onDelete: Cascade)
+  items    CollectionItem[]
+
+  @@index([designerId])
+  @@map("collections")
+}
+
+model CollectionItem {
+  id             String  @id @default(cuid())
+  collectionId   String
+  fabricAssetId  String?
+  productAssetId String?
+  position       Int     @default(0)
+
+  collection   Collection    @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  fabricAsset  FabricAsset?  @relation(fields: [fabricAssetId], references: [id], onDelete: SetNull)
+  productAsset ProductAsset? @relation(fields: [productAssetId], references: [id], onDelete: SetNull)
+
+  @@index([collectionId])
+  @@map("collection_items")
+}
+
+model MessageThread {
+  id         String   @id @default(cuid())
+  customerId String
+  projectId  String?
+  purpose    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  customer User      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  project  Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  messages Message[]
+
+  @@index([customerId])
+  @@index([projectId])
+  @@map("message_threads")
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  threadId   String
+  senderId   String
+  senderRole UserRole
+  body       String
+  createdAt  DateTime @default(now())
+
+  thread MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId])
+  @@map("messages")
+}
+
+model BriefOption {
+  id        String          @id @default(cuid())
+  type      BriefOptionType
+  label     String
+  sortOrder Int             @default(0)
+  active    Boolean         @default(true)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([type, label])
+  @@index([type, active, sortOrder])
+  @@map("brief_options")
+}
+
+model AiEmbeddingChunk {
+  id          String   @id @default(cuid())
+  projectId   String
+  sourceKey   String
+  content     String
+  contentHash String?
+  embedding   Json
+  model       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, sourceKey])
+  @@index([projectId])
+  @@map("ai_embedding_chunks")
+}
+
+model ProposalAiSession {
+  id        String   @id @default(cuid())
+  projectId String
+  userId    String
+  messages  Json     @default("[]")
+  modelId   String?
+  settings  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([userId])
+  @@map("proposal_ai_sessions")
+}
+
+model MoodboardSnapshot {
+  id          String   @id @default(cuid())
+  moodboardId String
+  document    Json
+  aiSummary   String?
+  createdAt   DateTime @default(now())
+
+  moodboard Moodboard @relation(fields: [moodboardId], references: [id], onDelete: Cascade)
+
+  @@index([moodboardId])
+  @@map("moodboard_snapshots")
+}
+
+model ProposalReadEvent {
+  id         String   @id @default(cuid())
+  proposalId String
+  customerId String
+  openedAt   DateTime @default(now())
+
+  proposal Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  customer User     @relation(fields: [customerId], references: [id])
+
+  @@unique([proposalId, customerId])
+  @@index([proposalId])
+  @@map("proposal_read_events")
+}
+
