@@ -16,6 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Write env file
+        run: echo "${{ secrets.ENV_DOCKER }}" > .env.docker
+
       - name: Build & deploy
         run: |
           docker compose up -d --build --remove-orphans
