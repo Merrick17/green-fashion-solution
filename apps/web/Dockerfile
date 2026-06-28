@@ -7,8 +7,7 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/types/package.json ./packages/types/
 COPY packages/utils/package.json ./packages/utils/
 
-RUN node -e "const fs=require('fs'),l=JSON.parse(fs.readFileSync('package-lock.json'));const d=/\/@next\/swc-(win32|darwin)/;for(const k of Object.keys(l.packages||{})){if(d.test(k)){delete l.packages[k];continue;}const p=l.packages[k];if(p?.optionalDependencies)for(const x of Object.keys(p.optionalDependencies))if(d.test(x))delete p.optionalDependencies[x];}fs.writeFileSync('package-lock.json',JSON.stringify(l));"
-RUN npm ci --workspace=web --include-workspace-root
+RUN npm install --workspace=web --include-workspace-root
 
 # ── Stage 2: build ────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
