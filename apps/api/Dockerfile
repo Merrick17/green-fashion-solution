@@ -8,7 +8,7 @@ COPY apps/api/package.json ./apps/api/
 COPY packages/types/package.json ./packages/types/
 COPY packages/utils/package.json ./packages/utils/
 
-RUN npm install --workspace=api --include-workspace-root
+RUN npm install --force --workspace=api --include-workspace-root
 
 # ── Stage 2: build ────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
