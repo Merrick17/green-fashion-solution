@@ -7,7 +7,11 @@ COPY apps/web/package.json ./apps/web/
 COPY packages/types/package.json ./packages/types/
 COPY packages/utils/package.json ./packages/utils/
 
-RUN npm install --force --workspace=web --include-workspace-root
+RUN npm install --force \
+    --workspace=@repo/types \
+    --workspace=@repo/utils \
+    --workspace=web \
+    --include-workspace-root
 
 # ── Stage 2: build ────────────────────────────────────────────────────
 FROM node:24-alpine AS builder
