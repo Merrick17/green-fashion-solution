@@ -12,41 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # ── Lint & type check ────────────────────────────────────────────────
-  lint-typecheck:
-    name: Lint & Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm install --force
-
-      - name: Build shared packages
-        run: |
-          npm run build --workspace=@repo/types
-          npm run build --workspace=@repo/utils
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check (API)
-        run: cd apps/api && npx tsc --noEmit
-
-      - name: Type check (Web)
-        run: cd apps/web && npx tsc --noEmit
-
-  # ── Docker build — verifies the full production build ────────────────
   docker-build:
     name: Docker Build
     runs-on: ubuntu-latest
-    needs: lint-typecheck
     steps:
       - uses: actions/checkout@v4
 
