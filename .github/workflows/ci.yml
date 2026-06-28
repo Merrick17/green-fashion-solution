@@ -23,9 +23,25 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Strip non-Linux SWC binaries from lockfile
+        run: |
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+            const drop = /\/@next\/swc-(win32|darwin)/;
+            for (const key of Object.keys(lock.packages || {})) {
+              if (drop.test(key)) { delete lock.packages[key]; continue; }
+              const pkg = lock.packages[key];
+              if (pkg?.optionalDependencies)
+                for (const d of Object.keys(pkg.optionalDependencies))
+                  if (drop.test(d)) delete pkg.optionalDependencies[d];
+            }
+            fs.writeFileSync('package-lock.json', JSON.stringify(lock));
+          "
 
       - name: Install dependencies
         run: npm ci
@@ -77,9 +93,25 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Strip non-Linux SWC binaries from lockfile
+        run: |
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+            const drop = /\/@next\/swc-(win32|darwin)/;
+            for (const key of Object.keys(lock.packages || {})) {
+              if (drop.test(key)) { delete lock.packages[key]; continue; }
+              const pkg = lock.packages[key];
+              if (pkg?.optionalDependencies)
+                for (const d of Object.keys(pkg.optionalDependencies))
+                  if (drop.test(d)) delete pkg.optionalDependencies[d];
+            }
+            fs.writeFileSync('package-lock.json', JSON.stringify(lock));
+          "
 
       - name: Install dependencies
         run: npm ci
@@ -112,9 +144,25 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Strip non-Linux SWC binaries from lockfile
+        run: |
+          node -e "
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('package-lock.json', 'utf8'));
+            const drop = /\/@next\/swc-(win32|darwin)/;
+            for (const key of Object.keys(lock.packages || {})) {
+              if (drop.test(key)) { delete lock.packages[key]; continue; }
+              const pkg = lock.packages[key];
+              if (pkg?.optionalDependencies)
+                for (const d of Object.keys(pkg.optionalDependencies))
+                  if (drop.test(d)) delete pkg.optionalDependencies[d];
+            }
+            fs.writeFileSync('package-lock.json', JSON.stringify(lock));
+          "
 
       - name: Install dependencies
         run: npm ci
