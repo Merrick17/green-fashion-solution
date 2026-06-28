@@ -44,6 +44,9 @@ services:
   # ── Application ──────────────────────────────────────────────────────
 
   api:
+    # IMAGE_API and IMAGE_TAG are set by the deploy workflow.
+    # For local dev, omit them and docker compose will build from source.
+    image: ${IMAGE_API:-gfs-api}:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: apps/api/Dockerfile
@@ -76,6 +79,7 @@ services:
       start_period: 30s
 
   web:
+    image: ${IMAGE_WEB:-gfs-web}:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: apps/web/Dockerfile

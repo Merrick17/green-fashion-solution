@@ -119,58 +119,37 @@ jobs:
   # ── Deploy to server ─────────────────────────────────────────────────
   deploy:
     name: Deploy (${{ inputs.environment || 'production' }})
-    runs-on: ubuntu-latest
+    # Runs directly on the server — no SSH hop needed.
+    # Register your server as a self-hosted runner:
+    #   https://github.com/<org>/<repo>/settings/actions/runners/new
+    # If you use runner labels (e.g. "production"), replace with:
+    #   runs-on: [self-hosted, production]
+    runs-on: self-hosted
     needs: build-push
     environment: ${{ inputs.environment || 'production' }}
     steps:
-      # SSH into the server, pull the new images, and restart containers.
-      # Requires these GitHub secrets set on the environment:
-      #   DEPLOY_HOST      — server IP or hostname
-      #   DEPLOY_USER      — SSH username (e.g. ubuntu)
-      #   DEPLOY_SSH_KEY   — private SSH key (the matching public key must be in authorized_keys)
-      #   DEPLOY_DIR       — path to docker-compose.yml on the server (e.g. /opt/gfs)
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            set -e
-            cd ${{ secrets.DEPLOY_DIR }}
+      - name: Log in to GHCR
+        # Use a Personal Access Token (classic) with read:packages scope,
+        # stored as the GHCR_PAT secret — GITHUB_TOKEN is runner-scoped and
+        # is not available on self-hosted runners as a registry credential.
+        run: |
+          echo "${{ secrets.GHCR_PAT }}" \
+            | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            # Authenticate with GHCR so we can pull private images
-            echo "${{ secrets.GITHUB_TOKEN }}" \
-              | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Pull & restart
+        env:
+          IMAGE_API: ${{ env.IMAGE_API }}
+          IMAGE_WEB: ${{ env.IMAGE_WEB }}
+          IMAGE_TAG: ${{ needs.build-push.outputs.sha-tag }}
+        working-directory: ${{ secrets.DEPLOY_DIR }}
+        run: |
+          set -e
 
-            # Pull the newly-built images (no rebuild on server)
-            docker compose pull
+          # Pull only the app images (postgres/redis use pinned public tags)
+          docker compose pull api web
 
-            # Restart services with zero manual downtime where possible
-            docker compose up -d --no-build --remove-orphans
+          # Recreate changed containers; leave healthy infra containers alone
+          docker compose up -d --no-build --remove-orphans
 
-            # Clean up dangling images to keep disk usage in check
-            docker image prune -f
-
-      # ── Alternative deployment targets ──────────────────────────────
-      # Uncomment the block that matches your platform and remove the SSH step above.
-
-      # Fly.io:
-      # - uses: superfly/flyctl-actions/setup-flyctl@master
-      # - run: flyctl deploy --remote-only
-      #   env:
-      #     FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-
-      # Railway:
-      # - uses: bervProject/railway-deploy@v1
-      #   with:
-      #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
-      #     service: api
-
-      # AWS ECS (uses image pushed to GHCR or ECR):
-      # - uses: aws-actions/amazon-ecs-deploy-task-definition@v2
-      #   with:
-      #     task-definition: .aws/task-definition.json
-      #     service: gfs-api
-      #     cluster: gfs-cluster
-      #     wait-for-service-stability: true
+          # Free disk space from previous image versions
+          docker image prune -f
