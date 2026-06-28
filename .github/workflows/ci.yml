@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: npm install --force
 
+      - name: Build shared packages
+        run: |
+          npm run build --workspace=@repo/types
+          npm run build --workspace=@repo/utils
+
       - name: Lint
         run: npm run lint
 
@@ -83,6 +88,12 @@ jobs:
 
       - name: Install dependencies
         run: npm install --force
+
+      - name: Build shared packages
+        run: |
+          npm run build --workspace=@repo/jest-config
+          npm run build --workspace=@repo/types
+          npm run build --workspace=@repo/utils
 
       - name: Generate Prisma client
         run: cd apps/api && npx prisma generate
