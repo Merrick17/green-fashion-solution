@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLogin } from '@/hooks/use-auth';
@@ -22,6 +23,8 @@ import {
 
 export default function LoginPage() {
   const login = useLogin();
+  const searchParams = useSearchParams();
+  const verified = searchParams.get('verified');
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -50,6 +53,11 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-muted-foreground">
             Sign in to continue
           </p>
+          {verified === '1' && (
+            <div className="mt-6 border border-border bg-[hsl(142,76%,97%)] px-4 py-3 text-sm text-[hsl(142,60%,30%)]">
+              Email verified — you can sign in now.
+            </div>
+          )}
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -88,6 +96,14 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
+              <div className="text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-sm font-medium text-foreground underline underline-offset-4"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               {login.isError && (
                 <p className="text-sm text-destructive">
                   Invalid email or password.

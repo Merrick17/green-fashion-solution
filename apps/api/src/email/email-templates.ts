@@ -75,4 +75,62 @@ export const emailTemplates = {
   </div>
 </body>
 </html>`,
+
+  passwordResetEmail: (name: string, resetUrl: string): string => `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Reset your GFS password</title></head>
+<body style="margin:0;padding:0;background:#f5f2ed;font-family:ui-sans-serif,system-ui,sans-serif">
+  <div style="max-width:560px;margin:40px auto;background:#faf8f5;border:1px solid #ddd8d0;border-radius:8px;padding:40px">
+    <p style="margin:0 0 28px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#787671">${BRAND.NAME}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;color:#404040;font-weight:600">Reset your GFS password</h1>
+    <p style="margin:0 0 8px;color:#787671;line-height:1.6">Hi ${name},</p>
+    <p style="margin:0 0 28px;color:#787671;line-height:1.6">We received a request to reset your password. Click the button below to choose a new one.</p>
+    <a href="${resetUrl}" style="display:inline-block;background:#5f6f64;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500">Reset Password →</a>
+    <p style="margin:24px 0 0;color:#a8a49c;font-size:13px;line-height:1.6">This link expires in 15 minutes.</p>
+    <p style="margin:8px 0 0;color:#a8a49c;font-size:13px;line-height:1.6">If you didn't request this, you can safely ignore this email.</p>
+  </div>
+</body>
+</html>`,
+
+  emailVerificationEmail: (name: string, verifyUrl: string): string => `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verify your email address</title></head>
+<body style="margin:0;padding:0;background:#f5f2ed;font-family:ui-sans-serif,system-ui,sans-serif">
+  <div style="max-width:560px;margin:40px auto;background:#faf8f5;border:1px solid #ddd8d0;border-radius:8px;padding:40px">
+    <p style="margin:0 0 28px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#787671">${BRAND.NAME}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;color:#404040;font-weight:600">Verify your email address</h1>
+    <p style="margin:0 0 8px;color:#787671;line-height:1.6">Hi ${name},</p>
+    <p style="margin:0 0 28px;color:#787671;line-height:1.6">Thanks for joining GFS. Please verify your email address to get started.</p>
+    <a href="${verifyUrl}" style="display:inline-block;background:#5f6f64;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500">Verify Email →</a>
+    <p style="margin:24px 0 0;color:#a8a49c;font-size:13px;line-height:1.6">This link expires in 24 hours.</p>
+  </div>
+</body>
+</html>`,
+
+  changeRequestReceived: (adminName: string, customerName: string, projectTitle: string, proposalUrl: string): string => `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Change request from ${customerName}</title></head>
+<body style="margin:0;padding:0;background:#f5f2ed;font-family:ui-sans-serif,system-ui,sans-serif">
+  <div style="max-width:560px;margin:40px auto;background:#faf8f5;border:1px solid #ddd8d0;border-radius:8px;padding:40px">
+    <p style="margin:0 0 28px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#787671">${BRAND.NAME}${BRAND.INTERNAL_SUFFIX}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;color:#404040;font-weight:600">Change request received</h1>
+    <p style="margin:0 0 8px;color:#787671;line-height:1.6">Hi ${adminName},</p>
+    <p style="margin:0 0 28px;color:#787671;line-height:1.6"><strong style="color:#404040">${customerName}</strong> has requested changes to the proposal for <strong style="color:#404040">${projectTitle}</strong>.</p>
+    <a href="${proposalUrl}" style="display:inline-block;background:#5f6f64;color:#ffffff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:500">Review Request →</a>
+  </div>
+</body>
+</html>`,
+
+  proposalApproved: (adminName: string, customerName: string, projectTitle: string): string => `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Proposal approved by ${customerName}</title></head>
+<body style="margin:0;padding:0;background:#f5f2ed;font-family:ui-sans-serif,system-ui,sans-serif">
+  <div style="max-width:560px;margin:40px auto;background:#faf8f5;border:1px solid #ddd8d0;border-radius:8px;padding:40px">
+    <p style="margin:0 0 28px;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#787671">${BRAND.NAME}${BRAND.INTERNAL_SUFFIX}</p>
+    <h1 style="margin:0 0 16px;font-size:22px;color:#404040;font-weight:600">Proposal approved</h1>
+    <p style="margin:0 0 8px;color:#787671;line-height:1.6">Hi ${adminName},</p>
+    <p style="margin:0 0 0;color:#787671;line-height:1.6"><strong style="color:#404040">${customerName}</strong> has approved the proposal for <strong style="color:#404040">${projectTitle}</strong>. You can now proceed to sampling.</p>
+  </div>
+</body>
+</html>`,
 };

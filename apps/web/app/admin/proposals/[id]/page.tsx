@@ -9,6 +9,7 @@ import { Breadcrumb } from '@/components/shared/breadcrumb';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { PanelErrorBoundary } from '@/components/shared/error-boundary-wrap';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   useProposal,
   useUpdateProposal,
@@ -31,6 +32,7 @@ import {
   emptyBoard,
   toSaveSections,
 } from '@/components/admin/proposal-builder/board-state';
+import { SamplingBoard } from '@/components/admin/sampling-board';
 export default function AdminProposalEditPage({
   params,
 }: {
@@ -126,6 +128,9 @@ export default function AdminProposalEditPage({
       {aiOpen ? 'Hide AI' : 'AI assist'}
     </Button>
   );
+  const isApproved = proposal.status === ProposalStatus.APPROVED;
+  const allItems = proposal.sections.flatMap((s) => s.items);
+
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex items-center gap-3 border-b border-portal-border bg-portal-surface px-4 py-2.5">
@@ -140,73 +145,171 @@ export default function AdminProposalEditPage({
           <StatusBadge status={proposal.status} />
         </div>
       </div>
-      <BuilderLayout
-        toolbarExtras={aiTrigger}
-        sourcePanel={
-          <AssetSourcePanel
-            fabrics={fabrics}
-            products={products}
-            moodboards={ctx?.moodboards ?? []}
-            placedAssetIds={placedIds}
-            onAdd={(assetId, kind) => board.addItem(assetId, kind)}
-          />
-        }
-        board={
-          <ProposalEditorColumn
-            board={board}
-            assetMap={assetMap}
-            onSuggest={() => setAiOpen(true)}
-            changeRequests={proposal.changeRequests ?? []}
-            budgetPerSection={proposal.budgetSummary?.perSection ?? []}
-            title={title}
-            onTitle={setTitle}
-            season={season}
-            onSeason={setSeason}
-            styleSummary={styleSummary}
-            onStyleSummary={setStyleSummary}
-            seasons={seasons}
-            clientName={clientName}
-            saving={updateProposal.isPending}
-            deleting={deleteProposal.isPending}
-            proposalId={id}
-            onDownloadPptx={() =>
-              void downloadExport(id, 'pptx', title || undefined).catch(() =>
-                toast.error('PPTX download failed'),
-              )
-            }
-            onDownloadPdf={() =>
-              void downloadExport(id, 'pdf', title || undefined).catch(() =>
-                toast.error('PDF download failed'),
-              )
-            }
-            onSaveDraft={() => save()}
-            onSend={() => save(ProposalStatus.SENT)}
-            onDelete={handleDelete}
-          />
-        }
-        preview={
-          <ProposalPreview
-            title={title}
-            season={season}
-            styleSummary={styleSummary}
-            clientName={clientName}
-            sections={board.sections}
-            assetMap={assetMap}
-          />
-        }
-        agentPanel={
-          <PanelErrorBoundary>
-            <AgentPanelResponsive
-              projectId={proposal.projectId}
-              proposalId={id}
-              onDraft={handleDraft}
-              onSaved={handleSaved}
-              open={aiOpen}
-              onOpenChange={setAiOpen}
+      {isApproved ? (
+        <Tabs defaultValue="builder" className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="border-b border-portal-border bg-portal-surface px-4">
+            <TabsList className="h-9 gap-0 bg-transparent p-0">
+              <TabsTrigger
+                value="builder"
+                className="h-9 rounded-none border-b-2 border-transparent px-4 text-xs font-medium data-[state=active]:border-foreground data-[state=active]:bg-transparent"
+              >
+                Builder
+              </TabsTrigger>
+              <TabsTrigger
+                value="sampling"
+                className="h-9 rounded-none border-b-2 border-transparent px-4 text-xs font-medium data-[state=active]:border-foreground data-[state=active]:bg-transparent"
+              >
+                Sampling
+              </TabsTrigger>
+            </TabsList>
+          </div>
+          <TabsContent value="builder" className="flex min-h-0 flex-1 flex-col overflow-hidden mt-0">
+            <BuilderLayout
+              toolbarExtras={aiTrigger}
+              sourcePanel={
+                <AssetSourcePanel
+                  fabrics={fabrics}
+                  products={products}
+                  moodboards={ctx?.moodboards ?? []}
+                  placedAssetIds={placedIds}
+                  onAdd={(assetId, kind) => board.addItem(assetId, kind)}
+                />
+              }
+              board={
+                <ProposalEditorColumn
+                  board={board}
+                  assetMap={assetMap}
+                  onSuggest={() => setAiOpen(true)}
+                  changeRequests={proposal.changeRequests ?? []}
+                  budgetPerSection={proposal.budgetSummary?.perSection ?? []}
+                  title={title}
+                  onTitle={setTitle}
+                  season={season}
+                  onSeason={setSeason}
+                  styleSummary={styleSummary}
+                  onStyleSummary={setStyleSummary}
+                  seasons={seasons}
+                  clientName={clientName}
+                  saving={updateProposal.isPending}
+                  deleting={deleteProposal.isPending}
+                  proposalId={id}
+                  onDownloadPptx={() =>
+                    void downloadExport(id, 'pptx', title || undefined).catch(() =>
+                      toast.error('PPTX download failed'),
+                    )
+                  }
+                  onDownloadPdf={() =>
+                    void downloadExport(id, 'pdf', title || undefined).catch(() =>
+                      toast.error('PDF download failed'),
+                    )
+                  }
+                  onSaveDraft={() => save()}
+                  onSend={() => save(ProposalStatus.SENT)}
+                  onDelete={handleDelete}
+                />
+              }
+              preview={
+                <ProposalPreview
+                  title={title}
+                  season={season}
+                  styleSummary={styleSummary}
+                  clientName={clientName}
+                  sections={board.sections}
+                  assetMap={assetMap}
+                />
+              }
+              agentPanel={
+                <PanelErrorBoundary>
+                  <AgentPanelResponsive
+                    projectId={proposal.projectId}
+                    proposalId={id}
+                    onDraft={handleDraft}
+                    onSaved={handleSaved}
+                    open={aiOpen}
+                    onOpenChange={setAiOpen}
+                  />
+                </PanelErrorBoundary>
+              }
             />
-          </PanelErrorBoundary>
-        }
-      />
+          </TabsContent>
+          <TabsContent value="sampling" className="min-h-0 flex-1 overflow-y-auto p-6 mt-0">
+            <div className="mx-auto max-w-5xl">
+              <p className="mb-6 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Sampling tracker — {allItems.length} item{allItems.length !== 1 ? 's' : ''}
+              </p>
+              <SamplingBoard proposalId={id} items={allItems} />
+            </div>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <BuilderLayout
+          toolbarExtras={aiTrigger}
+          sourcePanel={
+            <AssetSourcePanel
+              fabrics={fabrics}
+              products={products}
+              moodboards={ctx?.moodboards ?? []}
+              placedAssetIds={placedIds}
+              onAdd={(assetId, kind) => board.addItem(assetId, kind)}
+            />
+          }
+          board={
+            <ProposalEditorColumn
+              board={board}
+              assetMap={assetMap}
+              onSuggest={() => setAiOpen(true)}
+              changeRequests={proposal.changeRequests ?? []}
+              budgetPerSection={proposal.budgetSummary?.perSection ?? []}
+              title={title}
+              onTitle={setTitle}
+              season={season}
+              onSeason={setSeason}
+              styleSummary={styleSummary}
+              onStyleSummary={setStyleSummary}
+              seasons={seasons}
+              clientName={clientName}
+              saving={updateProposal.isPending}
+              deleting={deleteProposal.isPending}
+              proposalId={id}
+              onDownloadPptx={() =>
+                void downloadExport(id, 'pptx', title || undefined).catch(() =>
+                  toast.error('PPTX download failed'),
+                )
+              }
+              onDownloadPdf={() =>
+                void downloadExport(id, 'pdf', title || undefined).catch(() =>
+                  toast.error('PDF download failed'),
+                )
+              }
+              onSaveDraft={() => save()}
+              onSend={() => save(ProposalStatus.SENT)}
+              onDelete={handleDelete}
+            />
+          }
+          preview={
+            <ProposalPreview
+              title={title}
+              season={season}
+              styleSummary={styleSummary}
+              clientName={clientName}
+              sections={board.sections}
+              assetMap={assetMap}
+            />
+          }
+          agentPanel={
+            <PanelErrorBoundary>
+              <AgentPanelResponsive
+                projectId={proposal.projectId}
+                proposalId={id}
+                onDraft={handleDraft}
+                onSaved={handleSaved}
+                open={aiOpen}
+                onOpenChange={setAiOpen}
+              />
+            </PanelErrorBoundary>
+          }
+        />
+      )}
     </div>
   );
 }

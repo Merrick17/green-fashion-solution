@@ -11,28 +11,46 @@ import { MotionReveal } from "@/components/design-system/motion-reveal";
 
 const faqs = [
   {
-    id: "deliverable",
-    question: "What does your sourcing team deliver?",
+    id: "process",
+    question: "How does the sourcing proposal process work?",
     answer:
-      "A presentation-ready sourcing proposal: curated fabrics, vetted suppliers, cost and lead-time context, and style direction. After approval, we manage sampling and production through to delivery.",
-  },
-  {
-    id: "expertise",
-    question: "What supply chain capabilities do you cover?",
-    answer:
-      "Material research, supplier vetting and negotiation, quality control, sampling coordination, bulk production oversight, and logistics — end-to-end, with one dedicated contact for your brand.",
-  },
-  {
-    id: "network",
-    question: "Where is your sourcing network based?",
-    answer:
-      "Four hub offices — Dubai (HQ), Guangzhou, Bangalore, and Lahore — giving direct access to supplier markets across Eastern Europe, South Asia, East Asia, and North Africa.",
+      "You submit a project brief with your inspiration, requirements, and timeline. Our team conducts internal sourcing research — fabric selection, product references, style direction — then builds a structured proposal for your review. You can approve, request changes, or reject directly in the platform.",
   },
   {
     id: "timeline",
-    question: "How quickly can we receive a sourcing proposal?",
+    question: "How long does it take to receive a proposal?",
     answer:
-      "Timelines depend on collection scope and research depth. Most brands move from signed brief to first proposal review in days to weeks — significantly faster than managing sourcing internally.",
+      "Most proposals are delivered within 5 to 10 business days, depending on collection complexity. Rush timelines can be arranged during consultation.",
+  },
+  {
+    id: "revisions",
+    question: "Can we request revisions to a proposal?",
+    answer:
+      "Yes. You can request changes per section or for the entire proposal. Our team revises and resubmits — all tracked with version history in the platform.",
+  },
+  {
+    id: "designers",
+    question: "Who are the designers in your network?",
+    answer:
+      "Experienced sourcing professionals specializing in fabrics, materials, and garment references across key global production hubs including Turkey, Portugal, Italy, and Asia.",
+  },
+  {
+    id: "project-types",
+    question: "What project types do you handle?",
+    answer:
+      "Spring/Summer and Fall/Winter collections, capsule ranges, resort and pre-fall drops, private label development, and fabric library builds.",
+  },
+  {
+    id: "pricing",
+    question: "How is pricing structured?",
+    answer:
+      "Project-based and agreed upfront. Details are discussed during your initial consultation before any sourcing work begins.",
+  },
+  {
+    id: "confidentiality",
+    question: "Is my design data kept confidential?",
+    answer:
+      "Strictly. All projects are covered by NDA. Client briefs, moodboards, and proposals are never shared across accounts.",
   },
 ] as const;
 

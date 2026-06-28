@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -22,13 +23,18 @@ import {
 
 export default function RegisterPage() {
   const register = useRegister();
+  const [submitted, setSubmitted] = useState<string | null>(null);
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { name: '', email: '', password: '' },
   });
 
   function onSubmit(values: RegisterFormValues) {
-    register.mutate(values);
+    register.mutate(values, {
+      onSuccess: () => {
+        setSubmitted(values.email);
+      },
+    });
   }
 
   return (
@@ -44,6 +50,28 @@ export default function RegisterPage() {
           <div className="mb-10 lg:hidden">
             <Logo variant="dark" height={28} />
           </div>
+          {submitted !== null ? (
+            <div>
+              <h1 className="font-serif text-[length:var(--text-display-sm)] leading-[var(--leading-heading)] tracking-[var(--tracking-display)] tracking-tight">
+                Check your inbox
+              </h1>
+              <p className="mt-4 text-sm text-muted-foreground">
+                We sent a verification link to{' '}
+                <strong className="font-medium text-foreground">{submitted}</strong>.
+                Follow the link to activate your account.
+              </p>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Already verified?{' '}
+                <Link
+                  href="/login"
+                  className="font-medium text-foreground underline underline-offset-4"
+                >
+                  Sign in
+                </Link>
+              </p>
+            </div>
+          ) : (
+            <>
           <h1 className="font-serif text-[length:var(--text-display-sm)] leading-[var(--leading-heading)] tracking-[var(--tracking-display)] tracking-tight">
             Begin your collection
           </h1>
@@ -131,6 +159,8 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </p>
+          </>
+          )}
       </div>
     </AuthSplitLayout>
   );
