@@ -53,6 +53,11 @@ class AssetUploadDto {
   contentType!: string;
 }
 
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif',
+  'application/pdf',
+];
+
 @Controller('files')
 export class FilesController {
   constructor(
@@ -110,6 +115,9 @@ export class FilesController {
     @Req() req: { body: Buffer },
     @Res() res: Response,
   ) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new ForbiddenException('Dev upload endpoint is disabled in production');
+    }
     if (this.storage.isConfigured()) {
       return res.status(400).json({ message: 'Cloudinary is configured' });
     }
@@ -126,11 +134,17 @@ export class FilesController {
     @Req() req: { body: Buffer; user: { id: string } },
   ) {
     if (!moodboardId) throw new BadRequestException('moodboardId required');
+    const mime = contentType || 'image/png';
+    if (!ALLOWED_MIME_TYPES.includes(mime)) {
+      throw new BadRequestException(
+        `File type "${mime}" is not allowed. Accepted: JPEG, PNG, WebP, GIF, PDF`,
+      );
+    }
     return this.filesService.uploadMoodboardBuffer(
       moodboardId,
       req.user.id,
       req.body as Buffer,
-      contentType || 'image/png',
+      mime,
       filename || 'upload.png',
     );
   }
@@ -141,11 +155,17 @@ export class FilesController {
     @Query('contentType') contentType: string,
     @Req() req: { body: Buffer; user: { id: string; role: string } },
   ) {
+    const assetMime = contentType || 'image/png';
+    if (!ALLOWED_MIME_TYPES.includes(assetMime)) {
+      throw new BadRequestException(
+        `File type "${assetMime}" is not allowed. Accepted: JPEG, PNG, WebP, GIF, PDF`,
+      );
+    }
     return this.filesService.uploadAssetBuffer(
       req.user.id,
       req.user.role,
       req.body as Buffer,
-      contentType || 'image/png',
+      assetMime,
       filename || 'upload.png',
     );
   }

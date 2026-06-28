@@ -9,20 +9,29 @@ import { useProducts } from '@/hooks/use-assets';
 import { usePagination } from '@/hooks/use-pagination';
 import { PaginationControls } from '@/components/shared/pagination-controls';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { AssetImage } from '@/components/designer/asset-image';
 import { AssetListToolbar } from '@/components/designer/asset-list-toolbar';
 export default function DesignerProductsPage() {
   const { setPage, params } = usePagination(12);
   const [search, setSearch] = useState('');
   const [keyword, setKeyword] = useState<string | null>(null);
+  const [availabilityStatus, setAvailabilityStatus] = useState('');
   const { data, isLoading, isError, refetch } = useProducts({
     ...params,
     search: search || undefined,
+    availabilityStatus: availabilityStatus || undefined,
   });
   const products = data?.data ?? [];
   useEffect(() => {
     setPage(1);
-  }, [search, setPage]);
+  }, [search, availabilityStatus, setPage]);
   const shown = useMemo(
     () =>
       keyword
@@ -53,14 +62,27 @@ export default function DesignerProductsPage() {
         isError={isError}
         onRetry={() => void refetch()}
         toolbar={
-          <AssetListToolbar
-            search={search}
-            onSearchChange={setSearch}
-            keywords={products.map((p) => p.keywords)}
-            activeKeyword={keyword}
-            onKeywordChange={setKeyword}
-            placeholder="Search products…"
-          />
+          <div className="flex flex-wrap items-center gap-3">
+            <AssetListToolbar
+              search={search}
+              onSearchChange={setSearch}
+              keywords={products.map((p) => p.keywords)}
+              activeKeyword={keyword}
+              onKeywordChange={setKeyword}
+              placeholder="Search products…"
+            />
+            <Select value={availabilityStatus} onValueChange={setAvailabilityStatus}>
+              <SelectTrigger className="w-40 h-9">
+                <SelectValue placeholder="Availability" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All</SelectItem>
+                <SelectItem value="AVAILABLE">Available</SelectItem>
+                <SelectItem value="LOW_STOCK">Low Stock</SelectItem>
+                <SelectItem value="DISCONTINUED">Discontinued</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         }
         emptyTitle="No products"
         emptyDescription="Upload product references."

@@ -1,5 +1,6 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './prisma/prisma.module';
@@ -47,6 +48,10 @@ import { InstrumentationInterceptor } from './common/logging/instrumentation.int
 @Module({
   imports: [
     ConfigModule.forRoot({ validate: validateEnv, isGlobal: true }),
+    ThrottlerModule.forRoot([
+      { name: 'short', ttl: 60000, limit: 60 },
+      { name: 'auth', ttl: 60000, limit: 10 },
+    ]),
     RedisModule,
     PrismaModule,
     AuthModule,
@@ -83,6 +88,7 @@ import { InstrumentationInterceptor } from './common/logging/instrumentation.int
     LoggingModule,
   ],
   providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
     { provide: APP_INTERCEPTOR, useClass: AuditInterceptor },

@@ -1,8 +1,10 @@
-import { Controller, Post, Body, Res, HttpCode, Req } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res, HttpCode, Req, Query } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { Public } from '../common/decorators/public.decorator';
 
 @Controller('auth')
@@ -73,5 +75,28 @@ export class AuthController {
     res.clearCookie('refreshToken', { path: '/' });
     res.clearCookie('accessToken', { path: '/' });
     return { message: 'Logged out successfully' };
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(200)
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    await this.authService.forgotPassword(dto.email);
+    return { message: 'If this email is registered, a reset link is on its way.' };
+  }
+
+  @Public()
+  @Post('reset-password')
+  @HttpCode(200)
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    await this.authService.resetPassword(dto.token, dto.password);
+    return { message: 'Password reset successfully.' };
+  }
+
+  @Public()
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string, @Res() res: Response) {
+    const url = await this.authService.verifyEmail(token);
+    return res.redirect(url);
   }
 }

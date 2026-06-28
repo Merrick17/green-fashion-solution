@@ -10,6 +10,7 @@ import {
 import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { PaginationControls } from '@/components/shared/pagination-controls';
 import { RowActions } from '@/components/admin/row-actions';
+import { ConvertDialog } from '@/app/admin/acquisition/convert-dialog';
 import { Input } from '@/components/ui/input';
 import {
   useAdminWaitlist,
@@ -27,6 +28,7 @@ export default function AdminWaitlistPage() {
     id: string;
     label: string;
   } | null>(null);
+  const [convertTarget, setConvertTarget] = useState<WaitlistEntry | null>(null);
   const [query, setQuery] = useState('');
   const filtered = entries.filter((e) => {
     const q = query.trim().toLowerCase();
@@ -60,22 +62,20 @@ export default function AdminWaitlistPage() {
       header: '',
       className: 'text-right',
       render: (e) => (
-        <>
-          {/* TODO: "Convert" — no waitlist->project path yet. */}
-          <RowActions
-            items={[
-              {
-                label: 'Delete',
-                destructive: true,
-                onSelect: () =>
-                  setDeleteTarget({
-                    id: e.id,
-                    label: `${e.name} · ${e.brand}`,
-                  }),
-              },
-            ]}
-          />
-        </>
+        <RowActions
+          items={[
+            { label: 'Convert to customer', onSelect: () => setConvertTarget(e) },
+            {
+              label: 'Delete',
+              destructive: true,
+              onSelect: () =>
+                setDeleteTarget({
+                  id: e.id,
+                  label: `${e.name} · ${e.brand}`,
+                }),
+            },
+          ]}
+        />
       ),
     },
   ];
@@ -102,6 +102,7 @@ export default function AdminWaitlistPage() {
       {!isLoading && entries.length > 0 && (
         <PaginationControls meta={data?.meta} onPageChange={setPage} />
       )}
+      <ConvertDialog entry={convertTarget} onClose={() => setConvertTarget(null)} />
       <ConfirmDialog
         open={deleteTarget !== null}
         onOpenChange={(open) => {

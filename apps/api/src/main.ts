@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { join } from 'path';
 import express from 'express';
@@ -35,6 +36,7 @@ async function bootstrap() {
   });
 
   app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(compression());
 
   app.use('/api/files/dev-upload', express.raw({ type: () => true, limit: '25mb' }));
   app.use('/api/files/upload-buffer/moodboard', express.raw({ type: () => true, limit: '25mb' }));

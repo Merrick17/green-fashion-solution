@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsService } from '../events/events.service';
+import { EmailService } from '../email/email.service';
+import { emailTemplates } from '../email/email-templates';
 import { CacheService } from '../cache/cache.service';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { UpdateProposalDto } from './dto/update-proposal.dto';
@@ -50,6 +52,7 @@ export class ProposalsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly events: EventsService,
+    private readonly email: EmailService,
     private readonly pdf: ProposalPdfService,
     private readonly pptx: ProposalPptxService,
     private readonly cache: CacheService,
@@ -229,6 +232,24 @@ export class ProposalsService {
       data: { status: dto.status },
       include: proposalInclude,
     });
+
+    if (dto.status === ProposalStatus.CHANGES_REQUESTED) {
+      const admins = await this.prisma.user.findMany({ where: { role: UserRole.ADMIN } });
+      const customerName = updated.project.customer.name;
+      const projectTitle = updated.project.title;
+      const webOrigin = process.env.WEB_ORIGIN || 'http://localhost:3001';
+      const proposalUrl = `${webOrigin}/admin/proposals/${id}`;
+      for (const admin of admins) {
+        try {
+          await this.email.send(
+            admin.email,
+            'Change request received',
+            emailTemplates.changeRequestReceived(admin.name, customerName, projectTitle, proposalUrl),
+          );
+        } catch {}
+      }
+    }
+
     await this.events.emitProposalUpdated(updated.project.customerId, updated);
     await this.cache.delByPattern('proposals:*');
     return updated;

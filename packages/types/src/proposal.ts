@@ -6,6 +6,15 @@ export enum ProposalStatus {
   CHANGES_REQUESTED = 'CHANGES_REQUESTED',
 }
 
+export enum SamplingStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  IN_SAMPLING = 'IN_SAMPLING',
+  SAMPLE_APPROVED = 'SAMPLE_APPROVED',
+  SAMPLE_REJECTED = 'SAMPLE_REJECTED',
+  IN_PRODUCTION = 'IN_PRODUCTION',
+  DELIVERED = 'DELIVERED',
+}
+
 export interface ProposalItem {
   id: string;
   sectionId: string;
@@ -13,6 +22,7 @@ export interface ProposalItem {
   productAssetId?: string | null;
   notes?: string | null;
   position: number;
+  samplingStatus: SamplingStatus;
   createdAt: string;
   updatedAt: string;
   fabricAsset?: {
